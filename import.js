@@ -19,15 +19,18 @@ for (const key in obj) {
       const word = innerKeys[0];
       if (valueObj[word] === null) {
         continue;
-      }
-      const value = JSON.stringify(valueObj[word]); // 不做转义
-      writeStream.write(`${word},"${value}"\n`);
+      }      const value = JSON.stringify(valueObj[word]);
+      // 将JSON字符串中的引号转义，避免CSV解析错误
+      const escapedValue = value.replace(/"/g, '""');
+      writeStream.write(`${word},"${escapedValue}"\n`);
       continue;
     }
   }
   // fallback: 直接导出
-  const value = JSON.stringify(valueObj); // 不做转义
-  writeStream.write(`${key},"${value}"\n`);
+  const value = JSON.stringify(valueObj);
+  // 将JSON字符串中的引号转义，避免CSV解析错误
+  const escapedValue = value.replace(/"/g, '""');
+  writeStream.write(`${key},"${escapedValue}"\n`);
 }
 
 writeStream.end();
