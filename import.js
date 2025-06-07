@@ -8,19 +8,26 @@ const writeStream = fs.createWriteStream('dictionary.csv', { encoding: 'utf8' })
 writeStream.write('key,value\n');
 
 for (const key in obj) {
-  let valueObj = obj[key];
-  if (typeof valueObj === 'object' && valueObj !== null) {
+  let valueObj = obj[key];  // Skip null values
+  if (valueObj === null) {
+    continue;
+  }
+
+  if (typeof valueObj === 'object') {
     const innerKeys = Object.keys(valueObj);
     if (innerKeys.length === 1) {
       const word = innerKeys[0];
+      if (valueObj[word] === null) {
+        continue;
+      }
       const value = JSON.stringify(valueObj[word]); // 不做转义
-      writeStream.write(`${word},${value}\n`);
+      writeStream.write(`${word},"${value}"\n`);
       continue;
     }
   }
   // fallback: 直接导出
   const value = JSON.stringify(valueObj); // 不做转义
-  writeStream.write(`${key},${value}\n`);
+  writeStream.write(`${key},"${value}"\n`);
 }
 
 writeStream.end();
